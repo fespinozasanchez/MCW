@@ -10,9 +10,6 @@
 # Vscode
 .vscode/
 
-# data
-data/
-
 # file error lens
 .clangd
 
