@@ -4,6 +4,14 @@ import csv
 
 
 def generar_coordenadas(n):
+    """
+    This function generates n random coordinates in the form of tuples with x and y values between 0 and
+    1.
+
+    :param n: The number of coordinates to generate
+    :return: The function `generar_coordenadas(n)` returns a list of `n` tuples, where each tuple
+    contains two random float values between 0 and 1 representing x and y coordinates.
+    """
     coordenadas = []
     for _ in range(n):
         x = random.random()
@@ -12,8 +20,11 @@ def generar_coordenadas(n):
     return coordenadas
 
 
-# Generar coordenadas
-numero_datos = 50  # Cambia este valor según la cantidad de datos que desees generar
+# This code generates a list of 50 random coordinates in the form of tuples with x and y values
+# between 0 and 1 using the `generar_coordenadas(n)` function. Then, it saves these coordinates in
+# three different file formats: JSON, CSV, and TXT. Finally, it prints a message indicating that the
+# coordinates have been saved in the three files.
+numero_datos = 50
 datos = generar_coordenadas(numero_datos)
 
 # Guardar coordenadas en archivo JSON
