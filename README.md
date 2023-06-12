@@ -24,14 +24,7 @@ Follow the steps below to install the necessary dependencies:
 ## Usage
 
 1. Clone the repository to your local machine or download the source code files.
-
-2. Compile the C code:
-
-   ```sh
-   gcc -o main main.c -ljansson
-   ```
-
-3. Generate random coordinates (Python script):
+2. Generate random coordinates (Python script):
 
 - Make sure you have Python installed on your machine.
 - Run the following command to generate random coordinates:
@@ -39,6 +32,11 @@ Follow the steps below to install the necessary dependencies:
   python main.py
   ```
 - This will generate a JSON file (`coordinates.json`), a CSV file (`coordinates.csv`), and a TXT file (`coordinates.txt`) containing the random coordinates.
+3. Compile the C code:
+
+   ```sh
+   ./compile.bat
+   ```
 
 4. Run the following command to execute the C program:
    ```sh
