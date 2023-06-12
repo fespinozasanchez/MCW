@@ -7,6 +7,15 @@
 *.obj
 *.elf
 
+# Vscode
+.vscode/
+
+# data
+data/
+
+# file error lens
+.clangd
+
 # Linker output
 *.ilk
 *.map
