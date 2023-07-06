@@ -4,18 +4,24 @@
 #include <math.h>
 #include <jansson.h>
 
+
+
 #define MAX_COORDINATES 100
 #define GRID_SIZE 2 // nxn grid (2x2)
+
 
 typedef struct {
     double x;
     double y;
 } Coordinate;
 
+
+
 typedef struct {
     Coordinate coordinate;
     double distance;
 } Distance;
+
 
 typedef struct {
     double x;
@@ -24,8 +30,8 @@ typedef struct {
     int numCoordinates;
     Coordinate centroid;
     Distance* distances;
-    double sumDistances; // Sumatoria de las distancias
 } GridCell;
+
 
 json_t *load_json_file(const char *filename) {
     FILE *jsonFile = fopen(filename, "r");
@@ -114,7 +120,6 @@ Coordinate *extract_coordinates(json_t *root, size_t *numCoordinates) {
 }
 
 
-
 void print_coordinates(Coordinate *coordinates, size_t numCoordinates) {
     printf("Coordenadas:\n");
     for (size_t i = 0; i < numCoordinates; i++) {
@@ -178,94 +183,6 @@ void calculate_cell_centroids(GridCell** grid, int gridSize) {
 
 
 
-void calculate_distances(GridCell** grid, int gridSize) {
-    for (int i = 0; i < gridSize; i++) {
-        for (int j = 0; j < gridSize; j++) {
-            GridCell* cell = &grid[i][j];
-            int numCoordinates = cell->numCoordinates;
-            cell->distances = (Distance*)malloc(numCoordinates * sizeof(Distance));
-
-            for (int k = 0; k < numCoordinates; k++) {
-                cell->distances[k].coordinate = *(cell->coordinates[k]);
-                cell->distances[k].distance = sqrt(pow(cell->centroid.x - cell->coordinates[k]->x, 2) +
-                                                   pow(cell->centroid.y - cell->coordinates[k]->y, 2));
-            }
-        }
-    }
-}
-
-void heapify(Distance arr[], int n, int i) {
-    int largest = i;
-    int l = 2 * i + 1;
-    int r = 2 * i + 2;
-
-    if (l < n && arr[l].distance > arr[largest].distance)
-        largest = l;
-
-    if (r < n && arr[r].distance > arr[largest].distance)
-        largest = r;
-
-    if (largest != i) {
-        Distance temp = arr[i];
-        arr[i] = arr[largest];
-        arr[largest] = temp;
-
-        heapify(arr, n, largest);
-    }
-}
-
-void heap_sort(Distance arr[], int n) {
-    for (int i = n / 2 - 1; i >= 0; i--)
-        heapify(arr, n, i);
-
-    for (int i = n - 1; i > 0; i--) {
-        Distance temp = arr[0];
-        arr[0] = arr[i];
-        arr[i] = temp;
-
-        heapify(arr, i, 0);
-    }
-}
-
-
-void calculate_sum_distances(GridCell** grid, int gridSize) {
-    for (int i = 0; i < gridSize; i++) {
-        for (int j = 0; j < gridSize; j++) {
-            GridCell* cell = &grid[i][j];
-            int numCoordinates = cell->numCoordinates;
-            cell->sumDistances = 0.0;
-
-            for (int k = 0; k < numCoordinates; k++) {
-                cell->sumDistances += cell->distances[k].distance;
-            }
-        }
-    }
-}
-
-void find_centroid_with_min_distance(GridCell** grid, int gridSize) {
-    double minDistance = -1;
-    int minDistanceIndexX = -1;
-    int minDistanceIndexY = -1;
-
-    for (int i = 0; i < gridSize; i++) {
-        for (int j = 0; j < gridSize; j++) {
-            if (minDistance == -1 || grid[i][j].sumDistances < minDistance) {
-                minDistance = grid[i][j].sumDistances;
-                minDistanceIndexX = i;
-                minDistanceIndexY = j;
-            }
-        }
-    }
-
-    if (minDistanceIndexX != -1 && minDistanceIndexY != -1) {
-        GridCell minDistanceCell = grid[minDistanceIndexX][minDistanceIndexY];
-        printf("Centroide con menor distancia acumulada: Celda (%.16f, %.16f)\n",
-               minDistanceCell.x, minDistanceCell.y);
-        printf("Distancia acumulada: %.16f\n", minDistance);
-    }
-}
-
-
 int main() {
     const char *filename = "data/coordenadas.json";
     json_t *root = load_json_file(filename);
@@ -284,15 +201,11 @@ int main() {
     assign_coordinates_to_grid(coordinates, numCoordinates, &grid, GRID_SIZE);
 
     calculate_cell_centroids(grid, GRID_SIZE);
-    calculate_distances(grid, GRID_SIZE);
-    calculate_sum_distances(grid, GRID_SIZE);
-    find_centroid_with_min_distance(grid, GRID_SIZE);
 
     for (int i = 0; i < GRID_SIZE; i++) {
         for (int j = 0; j < GRID_SIZE; j++) {
             printf("Celda (%.16f, %.16f):\n", grid[i][j].x, grid[i][j].y);
             printf("Centroide: (%.16f, %.16f)\n", grid[i][j].centroid.x, grid[i][j].centroid.y);
-            printf("Distancia acumulada: %.16f\n", grid[i][j].sumDistances);
             for (int k = 0; k < grid[i][j].numCoordinates; k++) {
                 printf("(%.16f, %.16f)\n", grid[i][j].coordinates[k]->x, grid[i][j].coordinates[k]->y);
             }
