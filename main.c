@@ -283,26 +283,56 @@ int main() {
         return 1;
     }
 
+    int gridSize = GRID_SIZE;
+    double edgeSize = EDGE_SIZE;
+
     GridCell** grid;
-    assign_coordinates_to_grid(coordinates, numCoordinates, &grid, GRID_SIZE);
+    assign_coordinates_to_grid(coordinates, numCoordinates, &grid, gridSize);
 
-    calculate_cell_centroids(grid, GRID_SIZE);
-    calculate_distances(grid, GRID_SIZE);
-    calculate_sum_distances(grid, GRID_SIZE);
-    find_centroid_with_min_distance(grid, GRID_SIZE);
+    calculate_cell_centroids(grid, gridSize);
+    calculate_distances(grid, gridSize);
+    calculate_sum_distances(grid, gridSize);
 
-    for (int i = 0; i < GRID_SIZE; i++) {
-        for (int j = 0; j < GRID_SIZE; j++) {
-            printf("Celda (%.16f, %.16f):\n", grid[i][j].x, grid[i][j].y);
-            printf("Centroide: (%.16f, %.16f)\n", grid[i][j].centroid.x, grid[i][j].centroid.y);
-            printf("Distancia acumulada: %.16f\n", grid[i][j].sumDistances);
-            for (int k = 0; k < grid[i][j].numCoordinates; k++) {
-                printf("(%.16f, %.16f)\n", grid[i][j].coordinates[k]->x, grid[i][j].coordinates[k]->y);
-            }
-            printf("\n");
+    find_centroid_with_min_distance(grid, gridSize);
+
+    // Repetir el procedimiento con factor de reducción
+    int iterations = 5;
+    while (iterations > 0) {
+        edgeSize /= 2;
+
+        for (int i = 0; i < gridSize; i++) {
+            free(grid[i]);
         }
+        free(grid);
+
+        assign_coordinates_to_grid(coordinates, numCoordinates, &grid, gridSize);
+        calculate_cell_centroids(grid, gridSize);
+        calculate_distances(grid, gridSize);
+        calculate_sum_distances(grid, gridSize);
+
+        find_centroid_with_min_distance(grid, gridSize);
+
+        // Imprimir resultados de la iteración
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                printf("Celda (%.16f, %.16f):\n", grid[i][j].x, grid[i][j].y);
+                printf("Centroide: (%.16f, %.16f)\n", grid[i][j].centroid.x, grid[i][j].centroid.y);
+                printf("Distancia acumulada: %.16f\n", grid[i][j].sumDistances);
+                for (int k = 0; k < grid[i][j].numCoordinates; k++) {
+                    printf("(%.16f, %.16f)\n", grid[i][j].coordinates[k]->x, grid[i][j].coordinates[k]->y);
+                }
+                printf("\n");
+            }
+        }
+
+        iterations--;
     }
 
+    // Liberar memoria
+    for (int i = 0; i < gridSize; i++) {
+        free(grid[i]);
+    }
+    free(grid);
     free(coordinates);
     json_decref(root);
 
