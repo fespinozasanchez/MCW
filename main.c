@@ -125,9 +125,9 @@ void print_coordinates(Coordinate *coordinates, size_t numCoordinates) {
 
 
 
-void assign_coordinates_to_grid(Coordinate *coordinates, size_t numCoordinates, GridCell*** grid, int gridSize) {
+void assign_coordinates_to_grid(Coordinate *coordinates, size_t numCoordinates, GridCell*** grid, int gridSize, double edgeSize) {
     // Calcula el tamaño de la celda de la grid
-    double cellSize = EDGE_SIZE / gridSize;
+    double cellSize = edgeSize / gridSize;
 
     // Crea la grid
     *grid = (GridCell**)malloc(gridSize * sizeof(GridCell*));
@@ -287,7 +287,7 @@ int main() {
     double edgeSize = EDGE_SIZE;
 
     GridCell** grid;
-    assign_coordinates_to_grid(coordinates, numCoordinates, &grid, gridSize);
+    assign_coordinates_to_grid(coordinates, numCoordinates, &grid, gridSize, edgeSize);
 
     calculate_cell_centroids(grid, gridSize);
     calculate_distances(grid, gridSize);
@@ -296,7 +296,7 @@ int main() {
     find_centroid_with_min_distance(grid, gridSize);
 
     // Repetir el procedimiento con factor de reducción
-    int iterations = 5;
+    int iterations = 2;
     while (iterations > 0) {
         edgeSize /= 2;
 
@@ -305,7 +305,7 @@ int main() {
         }
         free(grid);
 
-        assign_coordinates_to_grid(coordinates, numCoordinates, &grid, gridSize);
+        assign_coordinates_to_grid(coordinates, numCoordinates, &grid, gridSize,edgeSize);
         calculate_cell_centroids(grid, gridSize);
         calculate_distances(grid, gridSize);
         calculate_sum_distances(grid, gridSize);
